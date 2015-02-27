@@ -1,0 +1,27 @@
+{
+    "name": "mixteer/persistor",
+    "type": "library",
+    "description": "A minimal ORM libray for quick development.",
+    "keywords": ["libray", "php", "persistence", "orm", "persistor"],
+    "homepage": "https://github.com/mixteer/persistor",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ntwali Bashige",
+            "email": "ntwali.bashige@gmail.com",
+            "homepage": "http://os.mixteer.com/authors/ntwalibas"
+        }
+    ],
+    
+    "require": {
+        "php": ">=5.3.0",
+        "doctrine/dbal": "2.5.*@dev"
+    },
+
+    "autoload": {
+        "psr-4": {
+            "Persistor\\": "src/Persistor",
+            "Test\\": "tests/Test"
+        }
+    }
+}
