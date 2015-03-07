@@ -422,13 +422,17 @@ class Persistor
         // If a primary key has been registered for this type of objects, we retrieve it        
         $primaryKey = null;
         if (isset($keys["primary"])) {
-            $primaryKeyColumn = $keys["primary"];
-            $primaryProperty = array_search($primaryKeyColumn, $mappings);
+            $primaryKey = $keys["primary"];
+            $primaryProperty = array_search($primaryKey, $mappings);
             if ($primaryProperty === false) {
                 throw new \Exception("A table primary key has been provided but the associated object property is missing from the table to object mapping.");
             }
 
-            $primaryKey = $this->readProperty($object, $primaryProperty);
+            $primaryKeyValue = $this->readProperty($object, $primaryProperty);
+
+            if ($primaryKeyValue == null) {
+                throw new \Exception("The primary key value is null therefore a delete by primary key cannot be performed. If you do not wish to delete by primary key, don't supply a primary key in the keys array - from getKeys(). The other possibility is that you're trying to delete an object that hasn't been persisted yet.");
+            }
         }
 
         // If no primary key was registered then we delete objects matching all the attributes of the object
@@ -603,6 +607,7 @@ class Persistor
                 return $this->$property;
             }, $object, $object)->__invoke();
             
+            return $value;
         };
 
         if (strpos($property, ":") !== false) {
