@@ -42,7 +42,7 @@ class UnitOfWork
     protected $connection = null;
     protected $dbConfig = null;
 
-    protected $classRecordSetMapping = array();
+    protected $classPersistorMapping = array();
     protected $objects = array();
     protected $classifiedObjects = array();
 
@@ -162,9 +162,9 @@ class UnitOfWork
         $objectId = spl_object_hash($object);
 
         // Make sure one persistor per object type
-        if (!isset($this->classRecordSetMapping[$class])) {
-            if (!isset($this->classRecordSetMapping[$class])) {
-                $this->classRecordSetMapping[$class] = $persistor;
+        if (!isset($this->classPersistorMapping[$class])) {
+            if (!isset($this->classPersistorMapping[$class])) {
+                $this->classPersistorMapping[$class] = $persistor;
             }
         }
 
@@ -194,9 +194,9 @@ class UnitOfWork
         $objectId = spl_object_hash($object);
 
         // Make sure one persistor per object type
-        if (!isset($this->classRecordSetMapping[$class])) {
-            if (!isset($this->classRecordSetMapping[$class])) {
-                $this->classRecordSetMapping[$class] = $persistor;
+        if (!isset($this->classPersistorMapping[$class])) {
+            if (!isset($this->classPersistorMapping[$class])) {
+                $this->classPersistorMapping[$class] = $persistor;
             }
         }
 
@@ -226,9 +226,9 @@ class UnitOfWork
         $objectId = spl_object_hash($object);
 
         // Make sure one persistor per object type
-        if (!isset($this->classRecordSetMapping[$class])) {
-            if (!isset($this->classRecordSetMapping[$class])) {
-                $this->classRecordSetMapping[$class] = $persistor;
+        if (!isset($this->classPersistorMapping[$class])) {
+            if (!isset($this->classPersistorMapping[$class])) {
+                $this->classPersistorMapping[$class] = $persistor;
             }
         }
 
@@ -284,11 +284,11 @@ class UnitOfWork
                     throw new \InvalidArgumentException("Commit mode has been set to commiting a entire persistor but none was provided. Please provide one");                    
                 }
 
-                if (!($objectToCommit instanceof RecordSet)) {
-                    throw new \InvalidArgumentException("Commit mode is set to commiting a persistor but the persistor provided is not an instance of RecordSet. Maybe you wanted to commit a single object?");
+                if (!($objectToCommit instanceof Persistor)) {
+                    throw new \InvalidArgumentException("Commit mode is set to commiting a persistor but the persistor provided is not an instance of Persistor. Maybe you wanted to commit a single object?");
                 }
 
-                $persistorMappedClass = array_search($objectToCommit, $this->classRecordSetMapping);
+                $persistorMappedClass = array_search($objectToCommit, $this->classPersistorMapping);
                 if ($persistorMappedClass === false) {
                     throw new \Exception("The persistor provided has no objects registered.");
                 }
@@ -360,7 +360,7 @@ class UnitOfWork
         $class = get_class($object);
 
         // Get the persistor
-        $persistor = $this->classRecordSetMapping[$class];
+        $persistor = $this->classPersistorMapping[$class];
 
         // Get the object query status
         $status = $this->objects[$objectId]["status"];
