@@ -422,13 +422,13 @@ class Persistor
         // If a primary key has been registered for this type of objects, we retrieve it        
         $primaryKey = null;
         if (isset($keys["primary"])) {
-            $primaryKey = $keys["primary"];
-            $primaryProperty = array_search($primaryKey, $mappings);
+            $primaryKeyColumn = $keys["primary"];
+            $primaryProperty = array_search($primaryKeyColumn, $mappings);
             if ($primaryProperty === false) {
                 throw new \Exception("A table primary key has been provided but the associated object property is missing from the table to object mapping.");
             }
 
-            $primaryKeyValue = $this->readProperty($object, $primaryProperty);
+            $primaryKey = $this->readProperty($object, $primaryProperty);
         }
 
         // If no primary key was registered then we delete objects matching all the attributes of the object
