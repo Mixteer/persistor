@@ -311,6 +311,31 @@ class UnitOfWork
                 }
             }
         } catch(\Exception $exception) {
+            // Make sure to reset the ID on the objects that were already commited before the error was accountered
+            foreach ($this->commitedObjects as $objectData) {
+                $object = $objectData["dependency-object"]->getObject();
+                
+                // The object ID and class
+                $objectId = spl_object_hash($object);
+                $class = get_class($object);
+
+                // Get the persistor
+                $persistor = $this->classPersistorMapping[$class];
+
+                // Get the object ID setter
+                $metadataMapper = $persistor->getMetadataMapper();
+                $setId = $metadataMapper->getIdSetter();
+
+                // Get the object query status
+                $status = $this->objects[$objectId]["status"];
+
+                if ($status == "insert") {
+                    if (isset($setId)) {
+                        $object->$setId(null);
+                    }
+                }
+            }
+            
             // Recompose the array of objects to commit
             if (count($this->commitedObjects) > 0) {
                 $this->objects = array_merge($this->objects, $this->commitedObjects);
@@ -362,6 +387,10 @@ class UnitOfWork
         // Get the persistor
         $persistor = $this->classPersistorMapping[$class];
 
+        // Get the object ID setter
+        $metadataMapper = $persistor->getMetadataMapper();
+        $setId = $metadataMapper->getIdSetter();
+
         // Get the object query status
         $status = $this->objects[$objectId]["status"];
 
@@ -399,6 +428,12 @@ class UnitOfWork
 
             // Execute the query
             $statement->execute($parameters);
+
+            if ($status == "insert") {
+                if (isset($setId)) {
+                    $object->$setId($this->connection->lastInsertId());
+                }
+            }
 
             $this->connection->commit();
 
