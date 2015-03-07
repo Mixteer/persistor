@@ -429,10 +429,6 @@ class Persistor
             }
 
             $primaryKeyValue = $this->readProperty($object, $primaryProperty);
-
-            if ($primaryKeyValue == null) {
-                throw new \Exception("The primary key value is null therefore an update by primary key cannot be performed. If you do not wish to update by primary key, don't supply a primary key in the keys array - from getKeys().");
-            }
         }
 
         // If no primary key was registered then we delete objects matching all the attributes of the object
