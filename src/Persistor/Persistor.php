@@ -513,7 +513,7 @@ class Persistor
             return $this->unitOfWork->commit(UnitOfWork::COMMIT_OBJECT, $object);
         }
 
-        return $this->unitOfWork->commit(UnitOfWork::COMMIT_RECORDSET, $this);
+        return $this->unitOfWork->commit(UnitOfWork::COMMIT_PERSISTOR, $this);
     }
 
     public function hydrate($values)

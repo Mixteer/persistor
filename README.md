@@ -13,7 +13,7 @@ The library is available on [packagist](https://packagist.org/) and installable 
 ```JSON
 {
     "require": {
-        "mixteer/persistor": "0.1.*"
+        "mixteer/persistor": "dev-master"
     }
 }
 ```
