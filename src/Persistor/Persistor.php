@@ -251,6 +251,12 @@ class Persistor
         return $object;
     }
 
+    public function getWhere($field, $parameter)
+    {
+        $objects = $this->readByWhere($field, $parameter);
+        return $objects;
+    }
+
     public function getLike($field, $parameter)
     {
         $objects = $this->readByLike($field, $parameter);
@@ -317,8 +323,40 @@ class Persistor
             foreach ($results as $row) {
                 $objects[] = $this->hydrate($row);
             }
+        }
 
-            return $objects;
+        return $objects;
+    }
+
+    private function readByWhere($field, $parameter)
+    {
+        $results = array();
+        $objects = array();
+
+        $columns = array_values($this->metadataMapper->getMapping());
+        $table = $this->metadataMapper->getTable();        
+
+        $query = $this->queryBuilder
+                      ->select($columns)
+                      ->from($table)
+                      ->where("$field = :$field")
+                      ->setParameter(":$field", "%$parameter%");
+
+        $parameters = $query->getParameters();
+
+        try {
+            $results = $this->queryRunner
+                           ->read($parameters, QueryRunner::FETCH_ALL)
+                           ->using($query)
+                           ->run();
+        } catch(FailedQueryException $exception) {
+            throw $exception;
+        }
+
+        if (count($results) > 0) {
+            foreach ($results as $row) {
+                $objects[] = $this->hydrate($row);
+            }
         }
 
         return $objects;
