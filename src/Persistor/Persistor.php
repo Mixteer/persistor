@@ -135,6 +135,11 @@ class Persistor
         return $this->identityMap;
     }
 
+    public function getQueryRunner()
+    {
+        return $this->queryRunner;
+    }
+
     public function getQueryBuilder()
     {
         return $this->queryBuilder;
@@ -230,6 +235,7 @@ class Persistor
         $identityMapKey = null;
 
         // Attempt to get the data from the identity map
+        //if (isset($this->container[$field]) && count($this->container[$field])) -> Is this required?
         if (isset($this->container[$field])) {
             $identityMapKey = isset($this->container[$field][$parameter]) ? $this->container[$field][$parameter] : null;
         }
@@ -340,7 +346,7 @@ class Persistor
                       ->select($columns)
                       ->from($table)
                       ->where("$field = :$field")
-                      ->setParameter(":$field", "%$parameter%");
+                      ->setParameter(":$field", "$parameter");
 
         $parameters = $query->getParameters();
 
