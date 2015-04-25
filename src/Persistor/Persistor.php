@@ -280,6 +280,7 @@ class Persistor
                       ->select($columns)
                       ->from($table)
                       ->where("$field = :$field")
+                      ->setParameters(array())
                       ->setParameter(":$field", $parameter);
 
         $parameters = $query->getParameters();
@@ -312,6 +313,7 @@ class Persistor
                       ->select($columns)
                       ->from($table)
                       ->where("$field like :$field")
+                      ->setParameters(array())
                       ->setParameter(":$field", "%$parameter%");
 
         $parameters = $query->getParameters();
@@ -346,6 +348,7 @@ class Persistor
                       ->select($columns)
                       ->from($table)
                       ->where("$field = :$field")
+                      ->setParameters(array())
                       ->setParameter(":$field", "$parameter");
 
         $parameters = $query->getParameters();
