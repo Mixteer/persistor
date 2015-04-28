@@ -19,6 +19,7 @@ use Persistor\Exceptions\InvalidClassException;
 use Persistor\Exceptions\InvalidMethodException;
 use Persistor\Exceptions\InvalidPropertyException;
 use Persistor\Exceptions\FailedQueryException;
+use Persistor\Exceptions\NullPrimaryKeyException;
 
 use Persistor\Interfaces\MetadataMapperInterface;
 
@@ -431,6 +432,11 @@ class Persistor
         $table = $this->metadataMapper->getTable();
         $primaryKey = isset($this->metadataMapper->getKeys()["primary"]) ? $this->metadataMapper->getKeys()["primary"] : null;
 
+        // We're updating by primary key so it better be available
+        if (is_null($primaryKey)) {
+            throw new NullPrimaryKeyException("The primary key must be declared on all objects to be updated in the database. Please provide one in your metadata mapper.");
+        }
+
         // Prepare query
         $query = $this->queryBuilder
                       ->update($table)
@@ -440,9 +446,17 @@ class Persistor
                 $query->set("$column", ":$column");
             }
         }
+        // Set parameters for the previous columns
         foreach ($mappings as $property => $column) {
             if ($column !== $primaryKey) {
                 $query->setParameter(":$column", $values[$property]);
+            }
+        }
+        // Set the primary key and its value in the where clause
+        foreach ($mappings as $property => $column) {
+            if ($column === $primaryKey) {
+                $query->where("$primaryKey = :$primaryKey");
+                $query->setParameter(":$primaryKey", $values[$property]);
             }
         }
 
